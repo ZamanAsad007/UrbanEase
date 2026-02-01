@@ -1,20 +1,26 @@
-const dbConnection = require('../config'); // Assuming you have a 'db.js' file for MySQL2 connection
+const { dbConnection } = require('../config');
 
 class CrudRepository {
-    constructor(dbConnection, tableName) {
-        // Validate the passed connection object
-        if (!dbConnection || !dbConnection.execute) {
+    constructor(tableName) {
+        if (!dbConnection || !dbConnection.connection || !dbConnection.connection.execute) {
             throw new Error('Invalid database connection passed to CrudRepository.');
         }
-        this.connection = dbConnection; // MySQL2 connection object
-        this.tableName = tableName; // Name of the table
+        this.connection = dbConnection.connection;
+        this.tableName = tableName;
     }
 
     // CREATE method: Inserts a new record into the specified table
     async create(data) {
         try {
-            const query = `INSERT INTO ${this.tableName} SET ?`;
-            const [result] = await this.connection.execute(query, [data]);
+            const fields = Object.keys(data);
+            if (fields.length === 0) {
+                throw new Error('No fields provided for create');
+            }
+            const columns = fields.join(', ');
+            const placeholders = fields.map(() => '?').join(', ');
+            const values = fields.map((field) => data[field]);
+            const query = `INSERT INTO ${this.tableName} (${columns}) VALUES (${placeholders})`;
+            const [result] = await this.connection.execute(query, values);
             return result; // Returns the result of the query (inserted data)
         } catch (error) {
             throw new Error(`Error creating resource: ${error.message}`);
@@ -63,8 +69,14 @@ class CrudRepository {
     // UPDATE method: Updates a record by ID
     async update(id, data) {
         try {
-            const query = `UPDATE ${this.tableName} SET ? WHERE id = ?`;
-            const [result] = await this.connection.execute(query, [data, id]);
+            const fields = Object.keys(data);
+            if (fields.length === 0) {
+                throw new Error('No fields provided for update');
+            }
+            const setClause = fields.map((field) => `${field} = ?`).join(', ');
+            const values = fields.map((field) => data[field]);
+            const query = `UPDATE ${this.tableName} SET ${setClause} WHERE id = ?`;
+            const [result] = await this.connection.execute(query, [...values, id]);
             if (result.affectedRows === 0) {
                 throw new Error(`Resource not found with id: ${id}`);
             }

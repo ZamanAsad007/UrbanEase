@@ -1,0 +1,29 @@
+const { CommentService } = require('../services');
+
+async function addComment(req, res) {
+    try {
+        const { user_id, content } = req.body;
+        if (!user_id || !content) {
+            return res.status(400).json({ message: 'user_id and content are required' });
+        }
+        const report_id = req.params.id;
+        const result = await CommentService.addComment({ report_id, user_id, content });
+        return res.status(201).json({ id: result.insertId });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+
+async function listComments(req, res) {
+    try {
+        const comments = await CommentService.listComments(req.params.id);
+        return res.status(200).json(comments);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+
+module.exports = {
+    addComment,
+    listComments
+};

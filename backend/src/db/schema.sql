@@ -1,0 +1,41 @@
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  email VARCHAR(160) NOT NULL UNIQUE,
+  role ENUM('resident','staff','admin') NOT NULL DEFAULT 'resident',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS reports (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  title VARCHAR(200) NOT NULL,
+  description TEXT NOT NULL,
+  photo_url VARCHAR(500) NULL,
+  location VARCHAR(255) NULL,
+  visibility ENUM('public','private') NOT NULL DEFAULT 'public',
+  status ENUM('pending','in_progress','resolved') NOT NULL DEFAULT 'pending',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS comments (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  report_id INT NOT NULL,
+  user_id INT NOT NULL,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (report_id) REFERENCES reports(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS report_votes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  report_id INT NOT NULL,
+  user_id INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uniq_vote (report_id, user_id),
+  FOREIGN KEY (report_id) REFERENCES reports(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
