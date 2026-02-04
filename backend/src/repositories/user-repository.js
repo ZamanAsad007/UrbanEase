@@ -11,6 +11,18 @@ class UserRepository extends CrudRepository {
 		const [rows] = await this.connection.execute(query, [email]);
 		return rows[0];
 	}
+
+	async listPending() {
+		const query = "SELECT * FROM users WHERE status = 'pending' ORDER BY created_at DESC";
+		const [rows] = await this.connection.execute(query);
+		return rows;
+	}
+
+	async approveUser(id) {
+		const query = "UPDATE users SET status = 'approved' WHERE id = ?";
+		const [result] = await this.connection.execute(query, [id]);
+		return result;
+	}
 }
 
 module.exports = UserRepository;

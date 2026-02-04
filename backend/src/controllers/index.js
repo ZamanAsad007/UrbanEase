@@ -1,6 +1,6 @@
 module.exports = {
 	UserController: require('./user-controller'),
-	ReportController: require('./report-controller'),
-	CommentController: require('./comment-controller'),
-	VoteController: require('./vote-controller')
+	AreaController: require('./area-controller'),
+	PostController: require('./post-controller'),
+	CommentController: require('./comment-controller')
 };

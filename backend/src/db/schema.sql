@@ -1,41 +1,64 @@
+DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS posts;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS areas;
+DROP TABLE IF EXISTS roles;
+
+CREATE TABLE IF NOT EXISTS roles (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(40) NOT NULL UNIQUE
+);
+
+INSERT IGNORE INTO roles (id, name) VALUES
+  (1, 'admin'),
+  (2, 'moderator'),
+  (3, 'user');
+
+CREATE TABLE IF NOT EXISTS areas (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL UNIQUE,
+  moderator_user_id INT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(120) NOT NULL,
   email VARCHAR(160) NOT NULL UNIQUE,
-  role ENUM('resident','staff','admin') NOT NULL DEFAULT 'resident',
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  password VARCHAR(255) NOT NULL,
+  nid VARCHAR(40) NOT NULL,
+  area_id INT NOT NULL,
+  role_id INT NOT NULL DEFAULT 3,
+  status ENUM('pending','approved') NOT NULL DEFAULT 'pending',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (area_id) REFERENCES areas(id) ON DELETE RESTRICT,
+  FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE RESTRICT
 );
 
-CREATE TABLE IF NOT EXISTS reports (
+ALTER TABLE areas
+  ADD CONSTRAINT fk_area_moderator FOREIGN KEY (moderator_user_id) REFERENCES users(id) ON DELETE SET NULL;
+
+CREATE TABLE IF NOT EXISTS posts (
   id INT AUTO_INCREMENT PRIMARY KEY,
+  area_id INT NOT NULL,
   user_id INT NOT NULL,
   title VARCHAR(200) NOT NULL,
   description TEXT NOT NULL,
-  photo_url VARCHAR(500) NULL,
-  location VARCHAR(255) NULL,
-  visibility ENUM('public','private') NOT NULL DEFAULT 'public',
+  image_url_1 VARCHAR(500) NULL,
+  image_url_2 VARCHAR(500) NULL,
   status ENUM('pending','in_progress','resolved') NOT NULL DEFAULT 'pending',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (area_id) REFERENCES areas(id) ON DELETE CASCADE,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS comments (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  report_id INT NOT NULL,
+  post_id INT NOT NULL,
   user_id INT NOT NULL,
   content TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (report_id) REFERENCES reports(id) ON DELETE CASCADE,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS report_votes (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  report_id INT NOT NULL,
-  user_id INT NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE KEY uniq_vote (report_id, user_id),
-  FOREIGN KEY (report_id) REFERENCES reports(id) ON DELETE CASCADE,
+  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

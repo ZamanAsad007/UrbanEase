@@ -1,6 +1,6 @@
 module.exports = {
     UserService: require('./user-service'),
-    ReportService: require('./report-service'),
-    CommentService: require('./comment-service'),
-    VoteService: require('./vote-service')
+    AreaService: require('./area-service'),
+    PostService: require('./post-service'),
+    CommentService: require('./comment-service')
 };

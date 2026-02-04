@@ -1,10 +1,12 @@
 const express = require('express');
 const userRoutes = require('./user-routes');
-const reportRoutes = require('./report-routes');
+const areaRoutes = require('./area-routes');
+const postRoutes = require('./post-routes');
 
 const router = express.Router();
 
 router.use('/users', userRoutes);
-router.use('/reports', reportRoutes);
+router.use('/areas', areaRoutes);
+router.use('/posts', postRoutes);
 
 module.exports = router;
