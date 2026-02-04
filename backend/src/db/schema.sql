@@ -1,8 +1,12 @@
+SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS report_votes;
 DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS reports;
 DROP TABLE IF EXISTS posts;
-DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS areas;
+DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS roles;
+SET FOREIGN_KEY_CHECKS = 1;
 
 CREATE TABLE IF NOT EXISTS roles (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -29,7 +33,7 @@ CREATE TABLE IF NOT EXISTS users (
   nid VARCHAR(40) NOT NULL,
   area_id INT NOT NULL,
   role_id INT NOT NULL DEFAULT 3,
-  status ENUM('pending','approved') NOT NULL DEFAULT 'pending',
+  status ENUM('pending','approved','rejected') NOT NULL DEFAULT 'pending',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (area_id) REFERENCES areas(id) ON DELETE RESTRICT,
   FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE RESTRICT
@@ -44,6 +48,7 @@ CREATE TABLE IF NOT EXISTS posts (
   user_id INT NOT NULL,
   title VARCHAR(200) NOT NULL,
   description TEXT NOT NULL,
+  location_url VARCHAR(500) NULL,
   image_url_1 VARCHAR(500) NULL,
   image_url_2 VARCHAR(500) NULL,
   status ENUM('pending','in_progress','resolved') NOT NULL DEFAULT 'pending',

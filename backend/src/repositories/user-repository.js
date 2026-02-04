@@ -23,6 +23,18 @@ class UserRepository extends CrudRepository {
 		const [result] = await this.connection.execute(query, [id]);
 		return result;
 	}
+
+	async rejectUser(id) {
+		const query = "UPDATE users SET status = 'rejected' WHERE id = ?";
+		const [result] = await this.connection.execute(query, [id]);
+		return result;
+	}
+
+	async setRole(id, roleId) {
+		const query = 'UPDATE users SET role_id = ? WHERE id = ?';
+		const [result] = await this.connection.execute(query, [roleId, id]);
+		return result;
+	}
 }
 
 module.exports = UserRepository;
