@@ -10,6 +10,10 @@ async function listPostsByArea(areaId) {
     return postRepo.listByArea(areaId);
 }
 
+async function listPostsByUser(userId) {
+    return postRepo.listByUser(userId);
+}
+
 async function getPost(id) {
     return postRepo.get(id);
 }
@@ -25,6 +29,7 @@ async function deletePost(id) {
 module.exports = {
     createPost,
     listPostsByArea,
+    listPostsByUser,
     getPost,
     updatePostStatus,
     deletePost

@@ -3,8 +3,8 @@ const { UserService } = require('../services');
 async function registerUser(req, res) {
 	try {
 		const { name, email, password, area_id, nid } = req.body;
-		if (!name || !email || !password || !area_id || !nid) {
-			return res.status(400).json({ message: 'name, email, password, area_id, nid are required' });
+		if (!name || !email || !password || !nid) {
+			return res.status(400).json({ message: 'name, email, password, nid are required' });
 		}
 		const existing = await UserService.findByEmail(email);
 		if (existing) {
@@ -15,7 +15,7 @@ async function registerUser(req, res) {
 			email,
 			password,
 			nid,
-			area_id,
+			area_id: area_id || 1,
 			role_id: 3,
 			status: 'pending'
 		});

@@ -41,6 +41,15 @@ async function listPosts(req, res) {
     }
 }
 
+async function listMyPosts(req, res) {
+    try {
+        const posts = await PostService.listPostsByUser(req.user.id);
+        return res.status(200).json(posts);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+
 async function getPost(req, res) {
     try {
         const post = await PostService.getPost(req.params.id);
@@ -79,6 +88,7 @@ async function deletePost(req, res) {
 module.exports = {
     createPost,
     listPosts,
+    listMyPosts,
     getPost,
     updateStatus,
     deletePost

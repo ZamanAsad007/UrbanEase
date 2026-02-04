@@ -6,6 +6,7 @@ const { authenticate, optionalAuthenticate, requireRole } = require('../../middl
 const router = express.Router();
 
 router.get('/', optionalAuthenticate, PostController.listPosts);
+router.get('/mine', authenticate, PostController.listMyPosts);
 router.post('/', upload.array('images', 2), PostController.createPost);
 router.get('/:id', optionalAuthenticate, PostController.getPost);
 router.patch('/:id/status', authenticate, requireRole('moderator', 'admin'), PostController.updateStatus);

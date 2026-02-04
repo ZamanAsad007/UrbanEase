@@ -16,6 +16,12 @@ class PostRepository extends CrudRepository {
         const [result] = await this.connection.execute(query, [status, id]);
         return result;
     }
+
+    async listByUser(userId) {
+        const query = 'SELECT * FROM posts WHERE user_id = ? ORDER BY created_at DESC';
+        const [rows] = await this.connection.execute(query, [userId]);
+        return rows;
+    }
 }
 
 module.exports = PostRepository;

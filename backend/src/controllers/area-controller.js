@@ -15,7 +15,9 @@ async function createArea(req, res) {
 
 async function listAreas(req, res) {
     try {
-        const areas = await AreaService.listAreas();
+        const include_placeholder = String(req.query.include_placeholder || '').toLowerCase();
+        const includePlaceholder = include_placeholder === '1' || include_placeholder === 'true';
+        const areas = await AreaService.listAreas({ includePlaceholder });
         return res.status(200).json(areas);
     } catch (error) {
         return res.status(500).json({ message: error.message });
