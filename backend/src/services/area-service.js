@@ -19,8 +19,13 @@ async function assignModerator(areaId, moderatorUserId) {
     return areaRepo.assignModerator(areaId, moderatorUserId);
 }
 
+async function deleteArea(areaId) {
+    return areaRepo.deleteAreaAndReassignUsers(areaId);
+}
+
 module.exports = {
     createArea,
     listAreas,
-    assignModerator
+    assignModerator,
+    deleteArea
 };

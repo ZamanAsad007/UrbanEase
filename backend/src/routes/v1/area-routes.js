@@ -7,5 +7,6 @@ const router = express.Router();
 router.get('/', AreaController.listAreas);
 router.post('/', authenticate, requireRole('admin'), AreaController.createArea);
 router.patch('/:id/assign-moderator', authenticate, requireRole('admin'), AreaController.assignModerator);
+router.delete('/:id', authenticate, requireRole('admin'), AreaController.deleteArea);
 
 module.exports = router;

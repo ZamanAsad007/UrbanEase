@@ -4,6 +4,7 @@ import { fetchAreas } from '../services/area';
 import {
   approveUser,
   createArea,
+  deleteArea,
   createModerator,
   fetchPendingUsers,
   rejectUser
@@ -83,6 +84,31 @@ const AdminDashboard = () => {
       await loadAll();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create moderator');
+    }
+  };
+
+  const handleDeleteArea = async (area) => {
+    setMessage('');
+    setError('');
+    const areaId = Number(area?.id);
+    if (!areaId) return;
+    if (areaId === 1) {
+      setError('Cannot delete Unassigned area');
+      return;
+    }
+    const ok = window.confirm(`Delete area "${area?.name || ''}"? Users will be reassigned to Unassigned.`);
+    if (!ok) return;
+    try {
+      await deleteArea(areaId);
+      setMessage('Area deleted');
+      await loadAll();
+    } catch (err) {
+      const backendMessage = err.response?.data?.message;
+      if (typeof backendMessage === 'string' && backendMessage.toLowerCase().includes('existing posts')) {
+        setError('This area has posts. Delete or move the posts first, then try again.');
+      } else {
+        setError(backendMessage || 'Failed to delete area');
+      }
     }
   };
 
@@ -213,6 +239,46 @@ const AdminDashboard = () => {
                       </div>
                     </div>
                   ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="row g-3 mt-1">
+        <div className="col-12">
+          <div className="card shadow-sm">
+            <div className="card-body">
+              <h6 className="mb-3">Areas</h6>
+              {visibleAreas.length === 0 ? (
+                <div className="text-muted">No areas.</div>
+              ) : (
+                <div className="table-responsive">
+                  <table className="table align-middle mb-0">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th style={{ width: 120 }}></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {visibleAreas.map((a) => (
+                        <tr key={a.id}>
+                          <td>{a.name}</td>
+                          <td className="text-end">
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-danger"
+                              onClick={() => handleDeleteArea(a)}
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </div>

@@ -1,6 +1,7 @@
 import api from './api';
 
 export const createArea = (name) => api.post('/areas', { name });
+export const deleteArea = (id) => api.delete(`/areas/${id}`);
 
 export const fetchPendingUsers = () => api.get('/users/pending');
 export const approveUser = (id) => api.patch(`/users/${id}/approve`);
