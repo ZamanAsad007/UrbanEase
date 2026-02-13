@@ -6,6 +6,8 @@ import { deletePost, listPostsByArea, updatePostStatus } from '../services/posts
 const ModeratorDashboard = () => {
   const areaId = useMemo(() => Number(localStorage.getItem('area_id')), []);
 
+  const sidebarLinks = useMemo(() => [{ label: 'Dashboard', to: '/moderator' }], []);
+
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -49,7 +51,7 @@ const ModeratorDashboard = () => {
   };
 
   return (
-    <DashboardLayout sidebarItems={['Area Posts', 'Update Status', 'Delete Posts']}>
+    <DashboardLayout sidebarLinks={sidebarLinks}>
       <div className="d-flex align-items-center justify-content-between mb-3">
         <h4 className="mb-0">Moderator Dashboard</h4>
         <button className="btn btn-outline-secondary btn-sm" onClick={loadPosts} type="button">

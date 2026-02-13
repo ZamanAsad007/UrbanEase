@@ -13,6 +13,12 @@ const AdminDashboard = () => {
   const [areas, setAreas] = useState([]);
   const [pendingUsers, setPendingUsers] = useState([]);
 
+  const sidebarLinks = [
+    { label: 'Create Area', to: '/admin#create-area' },
+    { label: 'Create Moderator', to: '/admin#create-moderator' },
+    { label: 'Approve Users', to: '/admin#pending-users' }
+  ];
+
   const [areaName, setAreaName] = useState('');
   const [modForm, setModForm] = useState({
     name: '',
@@ -105,7 +111,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <DashboardLayout sidebarItems={['Create Area', 'Create Moderator', 'Approve Users']}>
+    <DashboardLayout sidebarLinks={sidebarLinks}>
       <div className="d-flex align-items-center justify-content-between mb-3">
         <h4 className="mb-0">Admin Dashboard</h4>
         <button className="btn btn-outline-secondary btn-sm" onClick={loadAll} type="button">
@@ -120,7 +126,7 @@ const AdminDashboard = () => {
         <div className="col-12 col-lg-4">
           <div className="card shadow-sm">
             <div className="card-body">
-              <h6 className="mb-3">Create Area</h6>
+              <h6 className="mb-3" id="create-area">Create Area</h6>
               <form onSubmit={handleCreateArea}>
                 <div className="mb-3">
                   <label className="form-label">Area Name</label>
@@ -142,7 +148,7 @@ const AdminDashboard = () => {
         <div className="col-12 col-lg-4">
           <div className="card shadow-sm">
             <div className="card-body">
-              <h6 className="mb-3">Create Moderator</h6>
+              <h6 className="mb-3" id="create-moderator">Create Moderator</h6>
               <form onSubmit={handleCreateModerator}>
                 <div className="mb-2">
                   <label className="form-label">Name</label>
@@ -182,7 +188,7 @@ const AdminDashboard = () => {
         <div className="col-12 col-lg-4">
           <div className="card shadow-sm">
             <div className="card-body">
-              <h6 className="mb-3">Pending Users</h6>
+              <h6 className="mb-3" id="pending-users">Pending Users</h6>
 
               {pendingUsers.length === 0 ? (
                 <div className="text-muted">No pending users.</div>

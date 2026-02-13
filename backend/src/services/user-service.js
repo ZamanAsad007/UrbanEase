@@ -34,6 +34,26 @@ async function createModerator(data) {
     return user;
 }
 
+async function updateMyName(userId, name) {
+    return userRepo.updateNameWithCooldown(userId, name);
+}
+
+async function changeMyPassword(userId, oldPassword, newPassword) {
+    const user = await userRepo.get(userId);
+    const match = await bcrypt.compare(oldPassword, user.password);
+    if (!match) {
+        const error = new Error('Old password is incorrect');
+        error.statusCode = 400;
+        throw error;
+    }
+    const hashed = await bcrypt.hash(newPassword, 10);
+    return userRepo.updatePasswordHash(userId, hashed);
+}
+
+async function updateMyAvatar(userId, profileImageUrl) {
+    return userRepo.updateProfileImage(userId, profileImageUrl);
+}
+
 module.exports = {
     createUser,
     getUser,
@@ -41,5 +61,8 @@ module.exports = {
     listPendingUsers,
     approveUser,
     rejectUser,
-    createModerator
+    createModerator,
+    updateMyName,
+    changeMyPassword,
+    updateMyAvatar
 };

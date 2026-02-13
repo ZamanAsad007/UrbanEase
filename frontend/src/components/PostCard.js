@@ -12,8 +12,14 @@ const PostCard = ({
   post,
   showModeratorControls = false,
   onChangeStatus,
-  onDelete
+  onDelete,
+  onToggleUpvote
 }) => {
+  const roleId = Number(localStorage.getItem('role_id'));
+  const isUser = roleId === 3;
+  const upvoteCount = Number(post?.upvote_count || 0);
+  const upvotedByMe = Boolean(Number(post?.upvoted_by_me || 0));
+
   return (
     <div className="card shadow-sm h-100">
       <div className="card-body d-flex flex-column">
@@ -43,6 +49,21 @@ const PostCard = ({
             >
               Delete
             </button>
+          </div>
+        )}
+
+        {!showModeratorControls && (
+          <div className="d-flex align-items-center gap-2 mb-3">
+            <span className="badge text-bg-light">Upvotes: {upvoteCount}</span>
+            {isUser && (
+              <button
+                type="button"
+                className={`btn btn-sm ${upvotedByMe ? 'btn-success' : 'btn-outline-success'}`}
+                onClick={() => onToggleUpvote?.(post.id)}
+              >
+                {upvotedByMe ? 'Upvoted' : 'Upvote'}
+              </button>
+            )}
           </div>
         )}
 

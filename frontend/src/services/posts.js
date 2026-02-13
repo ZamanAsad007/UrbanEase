@@ -13,3 +13,7 @@ export const createPost = (formData) =>
 
 export const updatePostStatus = (id, status) => api.patch(`/posts/${id}/status`, { status });
 export const deletePost = (id) => api.delete(`/posts/${id}`);
+
+export const addCommentToPost = (postId, content) => api.post(`/posts/${postId}/comments`, { content });
+
+export const toggleUpvote = (postId) => api.post(`/posts/${postId}/upvote`);

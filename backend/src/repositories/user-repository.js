@@ -35,6 +35,29 @@ class UserRepository extends CrudRepository {
 		const [result] = await this.connection.execute(query, [roleId, id]);
 		return result;
 	}
+
+	async updateNameWithCooldown(userId, name) {
+		const query = `
+			UPDATE users
+			SET name = ?, name_updated_at = NOW()
+			WHERE id = ?
+			AND (name_updated_at IS NULL OR name_updated_at <= DATE_SUB(NOW(), INTERVAL 30 DAY))
+		`;
+		const [result] = await this.connection.execute(query, [name, userId]);
+		return result;
+	}
+
+	async updatePasswordHash(userId, passwordHash) {
+		const query = 'UPDATE users SET password = ?, password_updated_at = NOW() WHERE id = ?';
+		const [result] = await this.connection.execute(query, [passwordHash, userId]);
+		return result;
+	}
+
+	async updateProfileImage(userId, profileImageUrl) {
+		const query = 'UPDATE users SET profile_image_url = ? WHERE id = ?';
+		const [result] = await this.connection.execute(query, [profileImageUrl, userId]);
+		return result;
+	}
 }
 
 module.exports = UserRepository;

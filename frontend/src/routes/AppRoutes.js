@@ -8,6 +8,7 @@ import ModeratorDashboard from '../pages/ModeratorDashboard';
 import UserDashboard from '../pages/UserDashboard';
 import CreatePostPage from '../pages/CreatePostPage';
 import PostDetailsPage from '../pages/PostDetailsPage';
+import UserProfilePage from '../pages/UserProfilePage';
 import NotFound from '../pages/NotFound';
 
 const AppRoutes = () => (
@@ -46,6 +47,24 @@ const AppRoutes = () => (
       element={
         <PrivateRoute allowedRoles={[3]}>
           <CreatePostPage />
+        </PrivateRoute>
+      }
+    />
+
+    <Route
+      path="/user/profile"
+      element={
+        <PrivateRoute allowedRoles={[3]}>
+          <UserProfilePage />
+        </PrivateRoute>
+      }
+    />
+
+    <Route
+      path="/profile"
+      element={
+        <PrivateRoute allowedRoles={[1, 2, 3]}>
+          <UserProfilePage />
         </PrivateRoute>
       }
     />

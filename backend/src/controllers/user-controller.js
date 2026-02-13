@@ -35,6 +35,66 @@ async function getUser(req, res) {
 	}
 }
 
+async function getMe(req, res) {
+	try {
+		const user = await UserService.getUser(req.user.id);
+		const { password, ...safeUser } = user;
+		return res.status(200).json(safeUser);
+	} catch (error) {
+		return res.status(404).json({ message: error.message });
+	}
+}
+
+async function updateMyName(req, res) {
+	try {
+		const { name } = req.body;
+		if (!name || !String(name).trim()) {
+			return res.status(400).json({ message: 'name is required' });
+		}
+		const result = await UserService.updateMyName(req.user.id, String(name).trim());
+		if (result.affectedRows === 0) {
+			return res.status(403).json({ message: 'Name can be changed once every 30 days' });
+		}
+		const user = await UserService.getUser(req.user.id);
+		const { password, ...safeUser } = user;
+		return res.status(200).json(safeUser);
+	} catch (error) {
+		return res.status(500).json({ message: error.message });
+	}
+}
+
+async function changeMyPassword(req, res) {
+	try {
+		const { old_password, new_password } = req.body;
+		if (!old_password || !new_password) {
+			return res.status(400).json({ message: 'old_password and new_password are required' });
+		}
+		if (String(new_password).length < 6) {
+			return res.status(400).json({ message: 'new_password must be at least 6 characters' });
+		}
+		await UserService.changeMyPassword(req.user.id, old_password, new_password);
+		return res.status(200).json({ message: 'Password updated' });
+	} catch (error) {
+		return res.status(error.statusCode || 500).json({ message: error.message });
+	}
+}
+
+async function updateMyAvatar(req, res) {
+	try {
+		const file = req.file;
+		if (!file) {
+			return res.status(400).json({ message: 'image file is required' });
+		}
+		const profile_image_url = `/uploads/${file.filename}`;
+		await UserService.updateMyAvatar(req.user.id, profile_image_url);
+		const user = await UserService.getUser(req.user.id);
+		const { password, ...safeUser } = user;
+		return res.status(200).json(safeUser);
+	} catch (error) {
+		return res.status(500).json({ message: error.message });
+	}
+}
+
 async function listPendingUsers(req, res) {
 	try {
 		const users = await UserService.listPendingUsers();
@@ -89,8 +149,12 @@ async function createModerator(req, res) {
 module.exports = {
 	registerUser,
 	getUser,
+	getMe,
 	listPendingUsers,
 	approveUser,
 	rejectUser,
-	createModerator
+	createModerator,
+	updateMyName,
+	changeMyPassword,
+	updateMyAvatar
 };

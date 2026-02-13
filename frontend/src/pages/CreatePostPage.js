@@ -8,6 +8,14 @@ const CreatePostPage = () => {
   const navigate = useNavigate();
 
   const userId = useMemo(() => Number(localStorage.getItem('user_id')), []);
+
+  const sidebarLinks = useMemo(
+    () => [
+      { label: 'Feed', to: '/user' },
+      { label: 'Create Post', to: '/user/create-post' }
+    ],
+    []
+  );
   const [areas, setAreas] = useState([]);
 
   const [form, setForm] = useState({
@@ -81,6 +89,7 @@ const CreatePostPage = () => {
     setSubmitting(true);
     try {
       await createPost(data);
+      localStorage.setItem('area_id', String(form.area_id));
       setSuccess('Post submitted!');
       navigate('/user');
     } catch (err) {
@@ -91,7 +100,7 @@ const CreatePostPage = () => {
   };
 
   return (
-    <DashboardLayout sidebarItems={['My Area Posts', 'Create Post']}>
+    <DashboardLayout sidebarLinks={sidebarLinks}>
       <div className="d-flex align-items-center justify-content-between mb-3">
         <h4 className="mb-0">Create Post</h4>
       </div>

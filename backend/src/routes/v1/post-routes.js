@@ -9,11 +9,12 @@ router.get('/', optionalAuthenticate, PostController.listPosts);
 router.get('/mine', authenticate, PostController.listMyPosts);
 router.post('/', upload.array('images', 2), PostController.createPost);
 router.get('/:id', optionalAuthenticate, PostController.getPost);
+router.post('/:id/upvote', authenticate, requireRole('user'), PostController.toggleUpvote);
 router.patch('/:id/status', authenticate, requireRole('moderator', 'admin'), PostController.updateStatus);
 router.delete('/:id', authenticate, requireRole('moderator', 'admin'), PostController.deletePost);
 
 router.get('/:id/comments', CommentController.listComments);
-router.post('/:id/comments', CommentController.addComment);
+router.post('/:id/comments', authenticate, CommentController.addComment);
 router.delete('/:postId/comments/:commentId', authenticate, requireRole('moderator', 'admin'), CommentController.deleteComment);
 
 module.exports = router;

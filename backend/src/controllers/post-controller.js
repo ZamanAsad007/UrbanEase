@@ -34,7 +34,7 @@ async function listPosts(req, res) {
         if (req.user && req.user.role_id === 2 && Number(area_id) !== Number(req.user.area_id)) {
             return res.status(403).json({ message: 'Forbidden' });
         }
-        const posts = await PostService.listPostsByArea(area_id);
+        const posts = await PostService.listPostsByArea(area_id, req.user ? req.user.id : null);
         return res.status(200).json(posts);
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -52,7 +52,7 @@ async function listMyPosts(req, res) {
 
 async function getPost(req, res) {
     try {
-        const post = await PostService.getPost(req.params.id);
+        const post = await PostService.getPost(req.params.id, req.user ? req.user.id : null);
         if (req.user && req.user.role_id === 2 && Number(post.area_id) !== Number(req.user.area_id)) {
             return res.status(403).json({ message: 'Forbidden' });
         }
@@ -60,6 +60,19 @@ async function getPost(req, res) {
         return res.status(200).json({ ...post, comments });
     } catch (error) {
         return res.status(404).json({ message: error.message });
+    }
+}
+
+async function toggleUpvote(req, res) {
+    try {
+        const postId = Number(req.params.id);
+        if (!postId) {
+            return res.status(400).json({ message: 'Invalid post id' });
+        }
+        const result = await PostService.toggleUpvote(postId, req.user.id);
+        return res.status(200).json(result);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
     }
 }
 
@@ -90,6 +103,7 @@ module.exports = {
     listPosts,
     listMyPosts,
     getPost,
+    toggleUpvote,
     updateStatus,
     deletePost
 };
