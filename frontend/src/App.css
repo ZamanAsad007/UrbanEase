@@ -1,6 +1,6 @@
 .page-shell {
   min-height: 100vh;
-  background: #ffffff;
+  background: var(--bs-body-bg);
 }
 
 .auth-card {

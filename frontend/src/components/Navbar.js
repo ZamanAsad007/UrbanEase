@@ -12,6 +12,13 @@ const Navbar = () => {
   const token = localStorage.getItem('token');
   const [avatarUrl, setAvatarUrl] = useState(() => localStorage.getItem('profile_image_url') || '');
   const [userName, setUserName] = useState(() => localStorage.getItem('user_name') || '');
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
+
+  useEffect(() => {
+    const next = theme === 'dark' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-bs-theme', next);
+    localStorage.setItem('theme', next);
+  }, [theme]);
 
   useEffect(() => {
     if (!token) {
@@ -52,19 +59,31 @@ const Navbar = () => {
 
   const profileTo = token ? '/profile' : '#';
 
+  const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
+
   return (
-    <nav className="navbar navbar-light bg-white border-bottom px-3 app-navbar sticky-top">
+    <nav className="navbar navbar-expand navbar-light bg-body border-bottom px-3 app-navbar sticky-top">
       <span className="navbar-brand mb-0 h1">UrbanEase</span>
 
-      {token && (
-        <div className="d-flex align-items-center gap-2">
+      <div className="ms-auto d-flex align-items-center gap-3">
+        <button
+          type="button"
+          className="btn btn-outline-secondary btn-sm"
+          onClick={toggleTheme}
+          aria-label="Toggle theme"
+          title="Toggle theme"
+        >
+          {theme === 'dark' ? 'Light' : 'Dark'}
+        </button>
+
+        {token && (
           <Link
             to={profileTo}
             className="text-decoration-none d-flex align-items-center gap-2"
             aria-label="Profile"
             title="Profile"
           >
-            <span className="fw-semibold text-dark">{userName || 'Profile'}</span>
+            <span className="fw-semibold text-body">{userName || 'Profile'}</span>
             {avatarUrl ? (
               <img
                 src={absoluteUploadsUrl(avatarUrl)}
@@ -77,8 +96,8 @@ const Navbar = () => {
               <div style={{ width: 32, height: 32, borderRadius: 999, border: '1px solid #dee2e6' }} />
             )}
           </Link>
-        </div>
-      )}
+        )}
+      </div>
     </nav>
   );
 };

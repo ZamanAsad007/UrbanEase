@@ -7,8 +7,8 @@ async function createPost(data) {
     return postRepo.create(data);
 }
 
-async function listPostsByArea(areaId, userId = null, status = null) {
-    return postRepo.listByArea(areaId, userId, status);
+async function listPostsByArea(areaId, userId = null) {
+    return postRepo.listByArea(areaId, userId);
 }
 
 async function listPostsByUser(userId) {

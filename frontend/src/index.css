@@ -7,9 +7,22 @@ body {
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #f8fafc;
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
 }
 
 button {
   font-family: inherit;
+}
+
+:root[data-bs-theme='dark'] .form-control,
+:root[data-bs-theme='dark'] .form-select,
+:root[data-bs-theme='dark'] textarea.form-control {
+  border-color: rgba(var(--bs-body-color-rgb), 0.35);
+}
+
+:root[data-bs-theme='dark'] .form-control:focus,
+:root[data-bs-theme='dark'] .form-select:focus,
+:root[data-bs-theme='dark'] textarea.form-control:focus {
+  border-color: rgba(var(--bs-body-color-rgb), 0.6);
 }

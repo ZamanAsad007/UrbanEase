@@ -27,14 +27,14 @@ async function createPost(req, res) {
 
 async function listPosts(req, res) {
     try {
-        const { area_id, status } = req.query;
+        const { area_id } = req.query;
         if (!area_id) {
             return res.status(400).json({ message: 'area_id is required' });
         }
         if (req.user && req.user.role_id === 2 && Number(area_id) !== Number(req.user.area_id)) {
             return res.status(403).json({ message: 'Forbidden' });
         }
-        const posts = await PostService.listPostsByArea(area_id, req.user ? req.user.id : null, status);
+        const posts = await PostService.listPostsByArea(area_id, req.user ? req.user.id : null);
         return res.status(200).json(posts);
     } catch (error) {
         return res.status(500).json({ message: error.message });

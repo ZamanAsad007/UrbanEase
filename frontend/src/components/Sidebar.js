@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 const Sidebar = ({ links = [], onLogout }) => (
-  <div className="bg-white border-end d-flex flex-column min-vh-100 sidebar-shell">
+  <div className="bg-body border-end d-flex flex-column min-vh-100 sidebar-shell">
     <div className="list-group list-group-flush">
       {links.map((link) => (
         <NavLink
