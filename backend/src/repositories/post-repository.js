@@ -5,29 +5,41 @@ class PostRepository extends CrudRepository {
         super('posts');
     }
 
-        async listByArea(areaId, userId = null) {
-                const query = userId
-                        ? `
-                                SELECT p.*,
-                                    (SELECT COUNT(*) FROM post_upvotes pu WHERE pu.post_id = p.id) AS upvote_count,
-                                    EXISTS(
-                                        SELECT 1 FROM post_upvotes pu
-                                        WHERE pu.post_id = p.id AND pu.user_id = ?
-                                    ) AS upvoted_by_me
-                                FROM posts p
-                                WHERE p.area_id = ?
-                                ORDER BY p.created_at DESC
-                            `
-                        : `
-                                SELECT p.*,
-                                    (SELECT COUNT(*) FROM post_upvotes pu WHERE pu.post_id = p.id) AS upvote_count,
-                                    0 AS upvoted_by_me
-                                FROM posts p
-                                WHERE p.area_id = ?
-                                ORDER BY p.created_at DESC
-                            `;
-                const params = userId ? [userId, areaId] : [areaId];
-                const [rows] = await this.connection.execute(query, params);
+async listByArea(areaId, userId = null, status = null) {
+        let statusCondition = "p.status = 'approved'";
+        let params = [areaId];
+        if (status) {
+            if (status.includes(',')) {
+                const statuses = status.split(',').map(s => s.trim());
+                statusCondition = `p.status IN (${statuses.map(() => '?').join(',')})`;
+                params = [areaId, ...statuses];
+            } else {
+                statusCondition = "p.status = ?";
+                params = [areaId, status];
+            }
+        }
+        const query = userId
+            ? `
+                SELECT p.*,
+                    (SELECT COUNT(*) FROM post_upvotes pu WHERE pu.post_id = p.id) AS upvote_count,
+                    EXISTS(
+                        SELECT 1 FROM post_upvotes pu
+                        WHERE pu.post_id = p.id AND pu.user_id = ?
+                    ) AS upvoted_by_me
+                FROM posts p
+                WHERE p.area_id = ? AND ${statusCondition}
+                ORDER BY p.created_at DESC
+            `
+            : `
+                SELECT p.*,
+                    (SELECT COUNT(*) FROM post_upvotes pu WHERE pu.post_id = p.id) AS upvote_count,
+                    0 AS upvoted_by_me
+                FROM posts p
+                WHERE p.area_id = ? AND ${statusCondition}
+                ORDER BY p.created_at DESC
+            `;
+        const finalParams = userId ? [userId, ...params] : params;
+        const [rows] = await this.connection.execute(query, finalParams);
         return rows;
     }
 

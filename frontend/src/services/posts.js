@@ -1,6 +1,6 @@
 import api from './api';
 
-export const listPostsByArea = (areaId) => api.get('/posts', { params: { area_id: areaId } });
+export const listPostsByArea = (areaId, status) => api.get('/posts', { params: { area_id: areaId, status } });
 export const listMyPosts = () => api.get('/posts/mine');
 export const getPostById = (id) => api.get(`/posts/${id}`);
 

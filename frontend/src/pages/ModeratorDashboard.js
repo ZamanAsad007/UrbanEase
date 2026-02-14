@@ -11,12 +11,14 @@ const ModeratorDashboard = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [activeTab, setActiveTab] = useState('pending');
 
   const loadPosts = async () => {
     setLoading(true);
     setError('');
     try {
-      const { data } = await listPostsByArea(areaId);
+      const status = activeTab === 'pending' ? 'pending' : 'approved,rejected';
+      const { data } = await listPostsByArea(areaId, status);
       setPosts(Array.isArray(data) ? data : []);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load posts');
@@ -28,7 +30,7 @@ const ModeratorDashboard = () => {
   useEffect(() => {
     loadPosts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [areaId]);
+  }, [areaId, activeTab]);
 
   const handleChangeStatus = async (postId, status) => {
     try {
@@ -59,11 +61,32 @@ const ModeratorDashboard = () => {
         </button>
       </div>
 
+      <ul className="nav nav-tabs mb-3">
+        <li className="nav-item">
+          <button
+            className={`nav-link ${activeTab === 'pending' ? 'active' : ''}`}
+            onClick={() => setActiveTab('pending')}
+          >
+            Pending Posts
+          </button>
+        </li>
+        <li className="nav-item">
+          <button
+            className={`nav-link ${activeTab === 'resolved' ? 'active' : ''}`}
+            onClick={() => setActiveTab('resolved')}
+          >
+            Resolved Posts
+          </button>
+        </li>
+      </ul>
+
       {loading && <div className="text-muted">Loading posts…</div>}
       {error && <div className="alert alert-danger">{error}</div>}
 
       {!loading && !error && posts.length === 0 && (
-        <div className="alert alert-info mb-0">No posts found in your assigned area.</div>
+        <div className="alert alert-info mb-0">
+          No {activeTab} posts found in your assigned area.
+        </div>
       )}
 
       <div className="row g-3">
@@ -71,7 +94,7 @@ const ModeratorDashboard = () => {
           <div key={post.id} className="col-12 col-md-6 col-lg-4">
             <PostCard
               post={post}
-              showModeratorControls
+              showModeratorControls={activeTab === 'pending'}
               onChangeStatus={handleChangeStatus}
               onDelete={handleDelete}
             />
